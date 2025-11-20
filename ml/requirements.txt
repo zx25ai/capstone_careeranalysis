@@ -1,0 +1,6 @@
+pandas
+scikit-learn
+joblib
+sentence-transformers
+psycopg2-binary
+SQLAlchemy

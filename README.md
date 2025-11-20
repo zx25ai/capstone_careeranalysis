@@ -68,9 +68,31 @@ PostgreSQL	localhost:5432
 
 
 React UI handles profile creation and visualizes skill gaps
-
 FastAPI backend manages profiles, recommendations & gap calculations
-
 ML service trains and stores job classifier models
-
 PostgreSQL stores profiles, job roles & recommendations history
+
+🧪 Testing the Pipeline
+1. Visit the UI
+
+👉 http://localhost:3000
+
+2. Create a profile
+
+Enter your name, email, and skills.
+
+3. Click Get Recommendations
+
+View top 5 recommended job roles + missing skills.
+
+📌 Future Extensions
+
+Semantic embeddings using sentence-transformers
+
+Skill taxonomy + synonym resolution
+
+Personal learning plan generation
+
+Course recommendations (Coursera/LinkedIn API integration)
+
+Authentication & user accounts

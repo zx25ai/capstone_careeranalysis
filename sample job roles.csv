@@ -1,0 +1,4 @@
+id,title,description,required_skills,seniority
+1,Data Scientist,Build models and analyze data,"[\"python\", \"pandas\", \"ml\", \"statistics\"]",mid
+2,Product Manager,Define product features and strategy,"[\"product management\", \"roadmapping\", \"stakeholder mgmt\"]",senior
+3,Data Engineer,Build data pipelines and infra,"[\"sql\", \"airflow\", \"spark\", \"python\"]",mid

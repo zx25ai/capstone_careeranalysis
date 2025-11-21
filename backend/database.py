@@ -3,27 +3,32 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-# Load .env file from project root
+from models import Base
+
+# Load .env in project root
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
-    raise ValueError("DATABASE_URL is missing. Please add it to your .env file.")
+    raise ValueError("DATABASE_URL is missing from .env")
 
-# Create engine
 engine = create_engine(
     DATABASE_URL,
     pool_pre_ping=True,
 )
 
-# Create session
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Dependency for FastAPI
+
+# Dependency for FastAPI endpoints
 def get_db():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
+
+def init_db():
+    Base.metadata.create_all(bind=engine)

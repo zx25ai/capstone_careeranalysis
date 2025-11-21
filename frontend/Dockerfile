@@ -2,11 +2,13 @@ FROM node:18
 
 WORKDIR /app
 
-COPY package.json .
-COPY package-lock.json . 2>/dev/null || true
+# Copy only package.json first
+COPY package.json ./
 
+# Install dependencies (skip lock file entirely)
 RUN npm install
 
+# Now copy the full frontend source
 COPY . .
 
 EXPOSE 3000

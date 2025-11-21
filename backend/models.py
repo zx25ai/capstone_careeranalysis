@@ -1,9 +1,12 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Table
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import relationship
+from database import Base
 
-Base = declarative_base()
+# ==============================
+# ASSOCIATION TABLES
+# ==============================
 
-# Association table: Users ↔ Skills
+# Many-to-many: User ↔ Skill
 user_skills = Table(
     "user_skills",
     Base.metadata,
@@ -11,7 +14,7 @@ user_skills = Table(
     Column("skill_id", Integer, ForeignKey("skills.id")),
 )
 
-# Association table: Job Roles ↔ Skills
+# Many-to-many: JobRole ↔ Skill
 jobrole_skills = Table(
     "jobrole_skills",
     Base.metadata,
@@ -21,7 +24,7 @@ jobrole_skills = Table(
 
 
 # ==============================
-# MAIN TABLES
+# MAIN MODELS
 # ==============================
 
 class User(Base):
@@ -29,9 +32,10 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    education = Column(String)
-    coursework = Column(String)  # JSON string or comma separated list
+    education = Column(String, nullable=True)
+    experience = Column(String, nullable=True)
 
+    # User has many skills
     skills = relationship(
         "Skill",
         secondary=user_skills,
@@ -63,6 +67,7 @@ class JobRole(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
+    description = Column(String, nullable=True)
 
     skills = relationship(
         "Skill",

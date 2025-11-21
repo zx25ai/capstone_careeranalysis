@@ -1,53 +1,132 @@
-# backend/data_ingestion.py
-import os
-import json
-from sqlalchemy import create_engine, text
+"""
+Data ingestion using pure SQLAlchemy ORM
+No CRUD layer required.
+"""
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://pguser:pgpass@localhost:5432/jobrec")
-engine = create_engine(DATABASE_URL)
+from database import SessionLocal
+from models import Skill, Job, User
 
-def insert_job(title, description, skills, seniority="mid"):
-    skills_json = json.dumps(skills)
-    with engine.begin() as conn:
-        conn.execute(
-            text("""
-            INSERT INTO job_roles (title, description, required_skills, seniority)
-            VALUES (:title, :description, :skills::jsonb, :seniority)
-            """),
-            {"title": title, "description": description, "skills": skills_json, "seniority": seniority}
-        )
 
-def insert_sample_jobs():
-    jobs = [
-        ("Data Scientist", "Build models and analyze data end-to-end", ["python","pandas","ml","statistics"], "mid"),
-        ("Product Manager", "Define product features and strategy; work with stakeholders", ["product management","roadmapping","stakeholder mgmt"], "senior"),
-        ("Data Engineer", "Build data pipelines and ETL infrastructure", ["sql","airflow","spark","python"], "mid"),
-        ("Machine Learning Engineer", "Productionise ML models and pipelines", ["python","ml","docker","model-serving"], "mid"),
-        ("Business Analyst", "Translate business requirements to analytics", ["sql","excel","data visualization","stakeholder mgmt"], "junior"),
+def seed_skills(db):
+    """Insert base skills only if table is empty."""
+    existing = db.query(Skill).count()
+    if existing > 0:
+        print("✔ Skills already exist. Skipping seed.")
+        return
+
+    base_skills = [
+        "Python",
+        "Machine Learning",
+        "SQL",
+        "Data Visualization",
+        "Deep Learning",
+        "Project Management",
+        "Cloud Computing",
+        "NLP",
+        "Communication",
     ]
-    for title, desc, skills, seniority in jobs:
-        insert_job(title, desc, skills, seniority)
-    print("Sample jobs inserted.")
 
-def insert_sample_user():
-    with engine.begin() as conn:
-        conn.execute(
-            text("""
-            INSERT INTO users (name, email, summary, education, coursework, skills)
-            VALUES (:name, :email, :summary, :education::jsonb, :coursework::jsonb, :skills::jsonb)
-            ON CONFLICT (email) DO NOTHING
-            """),
-            {
-                "name": "Alice Example",
-                "email": "alice@example.com",
-                "summary": "MSc Computer Science, interested in data and ML.",
-                "education": json.dumps({"degree":"MSc Computer Science","institution":"Example University"}),
-                "coursework": json.dumps(["machine learning","databases","distributed systems"]),
-                "skills": json.dumps(["python","sql","pandas"])
-            }
+    print("Seeding skills...")
+
+    for name in base_skills:
+        db.add(Skill(name=name))
+
+    db.commit()
+    print("✔ Skills seeded.")
+
+
+def seed_jobs(db):
+    """Create jobs with related skills."""
+    existing = db.query(Job).count()
+    if existing > 0:
+        print("✔ Jobs already exist. Skipping seed.")
+        return
+
+    # Fetch entire skill map
+    skills = {s.name: s for s in db.query(Skill).all()}
+
+    jobs = [
+        {
+            "title": "Data Scientist",
+            "description": "Build ML models and analyze datasets.",
+            "skill_names": ["Python", "Machine Learning", "SQL", "Deep Learning"],
+        },
+        {
+            "title": "Data Analyst",
+            "description": "Work with SQL & dashboards to deliver insights.",
+            "skill_names": ["SQL", "Data Visualization", "Communication"],
+        },
+        {
+            "title": "ML Engineer",
+            "description": "Deploy machine learning solutions to production.",
+            "skill_names": ["Python", "Machine Learning", "Cloud Computing"],
+        },
+    ]
+
+    print("Seeding jobs...")
+
+    for job in jobs:
+        job_obj = Job(
+            title=job["title"],
+            description=job["description"],
+            skills=[skills[name] for name in job["skill_names"]],
         )
-    print("Sample user inserted (if not exist).")
+        db.add(job_obj)
+
+    db.commit()
+    print("✔ Jobs seeded.")
+
+
+def seed_users(db):
+    """Insert sample users."""
+    existing = db.query(User).count()
+    if existing > 0:
+        print("✔ Users already exist. Skipping seed.")
+        return
+
+    skills = {s.name: s for s in db.query(Skill).all()}
+
+    users = [
+        {
+            "name": "Alice",
+            "education": "BSc Computer Science",
+            "experience": "2 years in data analytics",
+            "skill_names": ["Python", "SQL"],
+        },
+        {
+            "name": "Bob",
+            "education": "MSc Artificial Intelligence",
+            "experience": "1 year ML research",
+            "skill_names": ["Python", "Machine Learning"],
+        },
+    ]
+
+    print("Seeding users...")
+
+    for u in users:
+        user_obj = User(
+            name=u["name"],
+            education=u["education"],
+            experience=u["experience"],
+            skills=[skills[n] for n in u["skill_names"]],
+        )
+        db.add(user_obj)
+
+    db.commit()
+    print("✔ Users seeded.")
+
+
+def run_ingestion():
+    db = SessionLocal()
+    try:
+        seed_skills(db)
+        seed_jobs(db)
+        seed_users(db)
+    finally:
+        db.close()
+
 
 if __name__ == "__main__":
-    insert_sample_jobs()
-    insert_sample_user()
+    print("🚀 Running SQLAlchemy-only data ingestion...")
+    run_ingestion()
+    print("🎉 Data ingestion done.")

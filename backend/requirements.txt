@@ -7,3 +7,6 @@ python-dotenv
 joblib
 alembic
 requests
+scikit-learn
+joblib
+pandas

@@ -1,10 +1,15 @@
 from fastapi import FastAPI
+from database import init_db
 from pydantic import BaseModel
 import joblib
 import json
 import os
 
 app = FastAPI()
+
+@app.on_event("startup")
+def startup_event():
+    init_db()
 
 MODEL_PATH = "models/recommendation_model.pkl"
 SKILL_MAP_PATH = "models/skill_map.json"

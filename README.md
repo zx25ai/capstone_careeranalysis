@@ -105,23 +105,28 @@ cd job-role-recommender-system
 🛢 3. Start PostgreSQL Using Docker
 
 Inside the project root:
+
 docker-compose up -d
 
 
 This runs:
 PostgreSQL @ localhost:5432
+
 pgAdmin @ localhost:8081
 With volumes for persistence
 
 To verify PostgreSQL is running:
+
 docker ps
 
 🧠 4. Install & Run the Backend (FastAPI)
 ➤ Navigate to backend
+
 cd backend
 
 ➤ Create virtual environment
 python -m venv venv
+
 source venv/bin/activate     # macOS/Linux
 venv\Scripts\activate        # Windows
 

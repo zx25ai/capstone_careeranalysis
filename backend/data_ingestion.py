@@ -2,8 +2,8 @@
 Data ingestion for SQLAlchemy ORM models (no CRUD layer).
 Seeds Skills, JobRoles, and Users safely.
 """
-
-from database import SessionLocal
+from database import SessionLocal, engine, Base
+Base.metadata.create_all(bind=engine)
 from models import Skill, JobRole, User
 
 

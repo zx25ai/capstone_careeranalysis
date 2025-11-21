@@ -26,4 +26,6 @@ EXPOSE 8000
 
 # Start-up command: init DB, ingest data, train model, then start FastAPI.
 # Using a bash -c chain ensures that we run each step in order.
-CMD ["bash", "-c", "python init_db.py && python data_ingestion.py && python train_model.py && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]
+#CMD ["bash", "-c", "python init_db.py && python data_ingestion.py && python train_model.py && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]
+CMD ["bash", "-c", "uvicorn main:app --host 0.0.0.0 --port 8000"]
+

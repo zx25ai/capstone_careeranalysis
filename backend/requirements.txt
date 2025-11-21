@@ -1,12 +1,16 @@
+# Core backend
 fastapi
 uvicorn[standard]
 sqlalchemy
 psycopg2-binary
 pydantic
 python-dotenv
-joblib
-alembic
 requests
+
+# ML & utilities
 scikit-learn
-joblib
 pandas
+joblib
+
+# Optional helpful packages
+python-multipart

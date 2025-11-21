@@ -1,20 +1,22 @@
 """
-Data ingestion using pure SQLAlchemy ORM
-No CRUD layer required.
+Data ingestion for SQLAlchemy ORM models (no CRUD layer).
+Seeds Skills, JobRoles, and Users safely.
 """
 
 from database import SessionLocal
-from models import Skill, Job, User
+from models import Skill, JobRole, User
 
+
+# ==============================
+# SKILLS
+# ==============================
 
 def seed_skills(db):
-    """Insert base skills only if table is empty."""
-    existing = db.query(Skill).count()
-    if existing > 0:
-        print("✔ Skills already exist. Skipping seed.")
+    if db.query(Skill).count() > 0:
+        print("✔ Skills already exist. Skipping.")
         return
 
-    base_skills = [
+    skill_names = [
         "Python",
         "Machine Learning",
         "SQL",
@@ -27,61 +29,62 @@ def seed_skills(db):
     ]
 
     print("Seeding skills...")
-
-    for name in base_skills:
+    for name in skill_names:
         db.add(Skill(name=name))
 
     db.commit()
     print("✔ Skills seeded.")
 
 
-def seed_jobs(db):
-    """Create jobs with related skills."""
-    existing = db.query(Job).count()
-    if existing > 0:
-        print("✔ Jobs already exist. Skipping seed.")
+# ==============================
+# JOB ROLES
+# ==============================
+
+def seed_job_roles(db):
+    if db.query(JobRole).count() > 0:
+        print("✔ Job roles already exist. Skipping.")
         return
 
-    # Fetch entire skill map
     skills = {s.name: s for s in db.query(Skill).all()}
 
-    jobs = [
+    job_roles = [
         {
-            "title": "Data Scientist",
-            "description": "Build ML models and analyze datasets.",
+            "name": "Data Scientist",
+            "description": "Build ML models and perform advanced data analysis.",
             "skill_names": ["Python", "Machine Learning", "SQL", "Deep Learning"],
         },
         {
-            "title": "Data Analyst",
-            "description": "Work with SQL & dashboards to deliver insights.",
+            "name": "Data Analyst",
+            "description": "Use SQL and dashboards to derive insights.",
             "skill_names": ["SQL", "Data Visualization", "Communication"],
         },
         {
-            "title": "ML Engineer",
-            "description": "Deploy machine learning solutions to production.",
+            "name": "ML Engineer",
+            "description": "Deploy and scale ML models in production.",
             "skill_names": ["Python", "Machine Learning", "Cloud Computing"],
         },
     ]
 
-    print("Seeding jobs...")
-
-    for job in jobs:
-        job_obj = Job(
-            title=job["title"],
-            description=job["description"],
-            skills=[skills[name] for name in job["skill_names"]],
+    print("Seeding job roles...")
+    for role in job_roles:
+        jr = JobRole(
+            name=role["name"],
+            description=role["description"],
+            skills=[skills[n] for n in role["skill_names"]],
         )
-        db.add(job_obj)
+        db.add(jr)
 
     db.commit()
-    print("✔ Jobs seeded.")
+    print("✔ Job roles seeded.")
 
+
+# ==============================
+# USERS
+# ==============================
 
 def seed_users(db):
-    """Insert sample users."""
-    existing = db.query(User).count()
-    if existing > 0:
-        print("✔ Users already exist. Skipping seed.")
+    if db.query(User).count() > 0:
+        print("✔ Users already exist. Skipping.")
         return
 
     skills = {s.name: s for s in db.query(Skill).all()}
@@ -96,37 +99,40 @@ def seed_users(db):
         {
             "name": "Bob",
             "education": "MSc Artificial Intelligence",
-            "experience": "1 year ML research",
+            "experience": "1 year in ML research",
             "skill_names": ["Python", "Machine Learning"],
         },
     ]
 
     print("Seeding users...")
-
     for u in users:
-        user_obj = User(
+        user = User(
             name=u["name"],
             education=u["education"],
             experience=u["experience"],
             skills=[skills[n] for n in u["skill_names"]],
         )
-        db.add(user_obj)
+        db.add(user)
 
     db.commit()
     print("✔ Users seeded.")
 
 
+# ==============================
+# MAIN EXECUTION
+# ==============================
+
 def run_ingestion():
     db = SessionLocal()
     try:
         seed_skills(db)
-        seed_jobs(db)
+        seed_job_roles(db)
         seed_users(db)
     finally:
         db.close()
 
 
 if __name__ == "__main__":
-    print("🚀 Running SQLAlchemy-only data ingestion...")
+    print("🚀 Running SQLAlchemy ORM data ingestion...")
     run_ingestion()
-    print("🎉 Data ingestion done.")
+    print("🎉 Data ingestion complete!")

@@ -94,12 +94,14 @@ def seed_users(db):
             "name": "Alice",
             "education": "BSc Computer Science",
             "experience": "2 years in data analytics",
+            "email": "alice_chien@gmeal.com",
             "skill_names": ["Python", "SQL"],
         },
         {
             "name": "Bob",
             "education": "MSc Artificial Intelligence",
             "experience": "1 year in ML research",
+            "email": "bob_fagot@gmeal.com",
             "skill_names": ["Python", "Machine Learning"],
         },
     ]
@@ -110,6 +112,7 @@ def seed_users(db):
             name=u["name"],
             education=u["education"],
             experience=u["experience"],
+            email=u["email"],
             skills=[skills[n] for n in u["skill_names"]],
         )
         db.add(user)

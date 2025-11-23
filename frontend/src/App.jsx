@@ -11,6 +11,9 @@ export default function App() {
   async function createProfile() {
     const res = await axios.post(API + "/profiles", profile);
     setUserId(res.data.user_id);
+
+    console.log("Payload:", formData);
+    console.log("Response:", res.data);
   }
 
   async function getRecs() {
@@ -42,7 +45,11 @@ export default function App() {
         }
       />
       <br />
-
+      <input
+        placeholder="Education"
+        onChange={(e) => setProfile({ ...profile, education: e.target.value })}
+      />
+      <br />
       <button onClick={createProfile}>Create Profile</button>
       <button onClick={getRecs}>Get Recommendations</button>
 

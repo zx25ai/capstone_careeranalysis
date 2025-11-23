@@ -34,6 +34,9 @@ class User(Base):
     name = Column(String, nullable=False)
     education = Column(String, nullable=True)
     experience = Column(String, nullable=True)
+    email = Column(String, unique=True, nullable=False)
+    summary = Column(String, nullable=True)
+    coursework = Column(String, nullable=True)
 
     # User has many skills
     skills = relationship(
@@ -68,9 +71,18 @@ class JobRole(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
     description = Column(String, nullable=True)
-
+    seniority = Column(String, nullable=True)
     skills = relationship(
         "Skill",
         secondary=jobrole_skills,
         back_populates="job_roles"
     )
+
+class Recommendation(Base):
+    __tablename__ = "recommendations"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, nullable=False)
+    job_role_id = Column(Integer, nullable=False)
+    score = Column(Integer, nullable=False)
+    gap_summary = Column(String, nullable=True)
